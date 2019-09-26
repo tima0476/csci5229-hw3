@@ -24,10 +24,11 @@ CLEAN=rm -f $(EXE) *.o *.a
 endif
 
 # Dependencies
-hw3.o: hw3.c rocket.h
+hw3.o: hw3.c rocket.h hsv2rgb.h
+hsv2rgb.o: hsv2rgb.c hsv2rgb.h
 
 #  Create archive
-hw3.a:hw3.o
+hw3.a:hw3.o hsv2rgb.o
 	ar -rcs $@ $^
 
 # Compile rules

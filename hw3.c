@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include "rocket.h"
+#include "hsv2rgb.h"
 
 //  OpenGL with prototypes for glext
 #define GL_GLEXT_PROTOTYPES
@@ -69,11 +70,20 @@ static void cylVertex(double r, double th, double z)
  * rx,ry,rz: 3D vector for rotation of the solid.
  * ph:  Angle to rotate the solid around (rx,ry,rz)
  * s: the scale of the solid
+ * h: the hue of the solid (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
  */
-static void lathe(dpp profile, int size, double bx, double by,double bz, double rx, double ry, double rz, double ph, double s)
+static void lathe(dpp profile, int size, double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h)
 {
    const int d=15;
    int th,i;
+   RGB rgb;    // RGB (red, green, blue) color triplet
+   HSV hsv;    // HSV (hue, saturation, value/lightness) color triplet
+
+   hsv.H = h;
+   hsv.S = 1;
+   hsv.V = 1;
+
+   rgb = hsv2rgb(hsv);
 
    // Save transformation
    glPushMatrix();
@@ -87,8 +97,12 @@ static void lathe(dpp profile, int size, double bx, double by,double bz, double 
    for (i=1; i<size; i++)
    {
       glBegin(GL_QUAD_STRIP);
+      hsv.S = (double)(size-i) / (double)size;
       for (th=0; th<=360; th+=d)
       {
+         hsv.V = fabs(th-180) / 360.0 + 0.5;
+         rgb = hsv2rgb(hsv);
+         glColor3f(rgb.R, rgb.G, rgb.B);
          cylVertex(profile[i-1].x, th, profile[i-1].y);
          cylVertex(profile[i].x, th, profile[i].y);
       }
@@ -99,7 +113,7 @@ static void lathe(dpp profile, int size, double bx, double by,double bz, double 
    if (profile[0].x != 0.0)
    {
       glBegin(GL_TRIANGLE_FAN);
-      glColor3f(0,0,1);
+      glColor3f(0,0,1);    // Top cap is always blue
       glVertex3d(0, profile[0].y, 0);
       for (th = 0; th <= 360; th += d)
          cylVertex(profile[0].x, th, profile[0].y);
@@ -111,7 +125,7 @@ static void lathe(dpp profile, int size, double bx, double by,double bz, double 
    {
       // Draw a triangle fan from the origin to the final circle.
       glBegin(GL_TRIANGLE_FAN);
-      glColor3f(0,0,1);
+      glColor3f(0,0,1);    // base cap is always blue
       glVertex3d(0, profile[size-1].y, 0);
       for (th = 0; th <= 360; th += d)
          cylVertex(profile[size-1].x, th, profile[size-1].y);
@@ -182,11 +196,26 @@ static void sphere(double x, double y, double z, double r)
 }
 
 /*
+ * Draw a cartoon rocket ship
+ *
+ * bz,by,bz: 3D coordinates of the base of the rocket
+ * rx,ry,rz: 3D vector for rotation of the rocket.
+ * ph:  Angle to rotate the rocket
+ * s: the scale of the rocket
+ * h: the hue of the rocket (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
+ */
+static void rocket(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h)
+{
+   lathe(rocket_profile, ROCKET_POINT_COUNT, bx, by, bz, rx, ry, rz, ph, s, h);
+}
+
+/*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
 void display()
 {
    const double len=1.5;  //  Length of axes
+
    //  Erase the window and the depth buffer
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
    //  Enable Z-buffering in OpenGL
@@ -197,22 +226,24 @@ void display()
    glRotatef(ph,1,0,0);
    glRotatef(th,0,1,0);
 
-   //  Draw rocket
-   glColor3f(0,1,1);
-   lathe(rocket_profile, ROCKET_POINT_COUNT, 1,1,0, 1,1,0,30, 1.0/25.0);
-   glColor3f(1,1,0);
-   lathe(rocket_profile, ROCKET_POINT_COUNT, -1,0,0, 1,0,1,85, -1.0/20.0);
-   glColor3f(1,0,1);
-   lathe(rocket_profile, ROCKET_POINT_COUNT, 0,0.5,1.5, 0,1,1,161, 1.0/30.0);
-   glColor3f(1,0,0);
-   lathe(rocket_profile, ROCKET_POINT_COUNT, 0,-0.5,-1, 0,1,0,35, -1.0/35.0);
-   glColor3f(0,1,0);
-   lathe(rocket_profile, ROCKET_POINT_COUNT, 1.1,1.1,1.1, 0,0,0,0, 1.0/30.0);
+   //  Draw some rockets
+   // Yellow
+   rocket(1,1,0, 1,1,0,30, 1.0/25.0, 60);
 
-   //  Draw spheres
-   // sphere(0,0,0 , 0.4);
-   // sphere(1,0,0 , 0.2);
-   // sphere(0,1,0 , 0.2);
+   // Cyan
+   rocket(-1,0,0, 1,0,1,85, -1.0/20.0, 180);
+   
+   // Magenta
+   rocket(0,0.5,1.5, 0,1,1,161, 1.0/30.0, 300);
+   
+   // Green
+   rocket(0,-0.5,-1, 0,1,0,35, -1.0/35.0, 120);
+   
+   // Purple
+   rocket(1.1,1.1,1.1, 0,0,0,0, 1.0/30.0, 260);
+
+   //  Draw sphere
+   sphere(0,0,0 , 0.4);
 
    //  White
    glColor3f(1,1,1);

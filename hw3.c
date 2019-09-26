@@ -100,7 +100,7 @@ static void lathe(dpp profile, int size, double bx, double by, double bz, double
       hsv.S = (double)(size-i) / (double)size;     // Vary the color saturation from 0 at the bottom to 1 at the tip
       for (th=0; th<=360; th+=d)
       {
-         hsv.V = fabs(th-180) / 360.0 + 0.5;       // Vary the color lightness from .5 to 1.0 around the rotation
+         hsv.V = fabs((float)th-180) / 360.0 + 0.5;       // Vary the color lightness from .5 to 1.0 around the rotation
          rgb = hsv2rgb(hsv);                       // Calculate the vertex RGB color from the HSV triplet.
          glColor3f(rgb.R, rgb.G, rgb.B);
          cylVertex(profile[i-1].x, th, profile[i-1].y);

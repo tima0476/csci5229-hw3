@@ -40,7 +40,6 @@ hw3.a:hw3.o hsv2rgb.o
 #  Link
 hw3:hw3.o hw3.a
 	gcc -O3 -o $@ $^   $(LIBS)
-	./hw3
 
 #  Clean
 clean:

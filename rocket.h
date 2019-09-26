@@ -9,6 +9,7 @@ typedef struct duopoint {
 
 typedef struct duopoint *dpp;
 
+// The following shapes were manually traced and digitized on graph paper.
 duopoint rocket_profile[] = {
 	{0,32},
 	{1,31.4},
@@ -69,6 +70,7 @@ duopoint rocket_fin[] = {
 	{14.3,2},
 	{14.3,1},
 	{14.3,0},
+
 	{13.8,0},
 	{13.6,1},
 	{13.3,2},
@@ -77,13 +79,19 @@ duopoint rocket_fin[] = {
 	{12.7,5},
 	{12.4,6},
 	{12.1,7},
+	{12,7.5},
 	{11.8,8},
+	{11.6,8.6},
 	{11.3,9},
+	{11.2,9.6},
 	{10.9,10},
+	{10.4,10.3},
 	{9.9,10.7},
+	{9.2,10.7},
 	{8.8,10.8},
 	{8,10.9},
 	{7,11},
+	{6.6,11},
 	{6,11.2}
 };
 #define ROCKET_FIN_POINT_COUNT	(sizeof(rocket_fin) / sizeof(rocket_fin[0]))

@@ -201,9 +201,11 @@ static void sphere(double x, double y, double z, double r)
  * rx,ry,rz: 3D vector for rotation of the rocket.
  * ph:  Angle to rotate the rocket
  * s: the scale of the rocket
+ * fc: the number of fins on the rocket
  */
-static void draw_fins(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s)
+static void draw_fins(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, int fc)
 {
+   int dth = 360/fc;
    int th,i;
 
    // Save transformation
@@ -215,7 +217,7 @@ static void draw_fins(double bx, double by, double bz, double rx, double ry, dou
    glScaled(s,s,s);
 
    // Draw three rocket fins, spaced equally around the cylinder   
-   for (th=0; th<=360; th += 120)
+   for (th=0; th<=360; th += dth)
    {
       glBegin(GL_QUAD_STRIP);    // The fin shape is non-convex, so can't use a simple polygon
       glColor3f(1,0,0);    // No choice; rocket fins are RED!
@@ -241,14 +243,15 @@ static void draw_fins(double bx, double by, double bz, double rx, double ry, dou
  * ph:  Angle to rotate the rocket
  * s: the scale of the rocket
  * h: the base hue of the rocket (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
+ * fc: how many fins the rocket gets
  */
-static void rocket(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h)
+static void rocket(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h, int fc)
 {
    // Draw the main rocket cylinder
    lathe(rocket_profile, ROCKET_POINT_COUNT, bx, by, bz, rx, ry, rz, ph, s, h);
 
    // Now add some fins
-   draw_fins(bx, by, bz, rx, ry, rz, ph, s);
+   draw_fins(bx, by, bz, rx, ry, rz, ph, s, fc);
 }
 
 /*
@@ -269,22 +272,13 @@ void display()
    glRotatef(th,0,1,0);
 
    //  Draw some rockets
-   // Yellow
-   rocket(1,1,0, 1,1,0,30, 1.0/50.0, 60);
+   rocket(1,1,0, 1,1,0,30, 1.0/50.0, 60, 3);          // Yellow
+   rocket(-1,0,0, 1,0,1,85, -1.0/40.0, 180, 4);       // Cyan
+   rocket(0,0.5,1.5, 0,1,1,161, 1.0/60.0, 300, 5);    // Magenta
+   rocket(0,-0.5,-1, 0,1,0,35, -1.0/70.0, 120, 6);    // Green
+   rocket(1.1,1.1,1.1, 0,0,0,0, 1.0/60.0, 260, 7);    // Purple
 
-   // Cyan
-   rocket(-1,0,0, 1,0,1,85, -1.0/40.0, 180);
-   
-   // Magenta
-   rocket(0,0.5,1.5, 0,1,1,161, 1.0/60.0, 300);
-   
-   // Green
-   rocket(0,-0.5,-1, 0,1,0,35, -1.0/70.0, 120);
-   
-   // Purple
-   rocket(1.1,1.1,1.1, 0,0,0,0, 1.0/60.0, 260);
-
-   //  Draw sphere
+   //  Draw a planet (sphere) in the center
    sphere(0,0,0 , 0.4);
 
    //  White

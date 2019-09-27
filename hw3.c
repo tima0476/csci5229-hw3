@@ -1,5 +1,5 @@
 /*
- *  Timothy Mason, homework 3, Scene in 3D
+ * Timothy Mason, homework 3, Scene in 3D
  * CSCI 5229 Computer Graphics - University of Colorado Boulder
  *
  * Based heavily on example 8, ex8.c
@@ -39,15 +39,17 @@ int axes=1;       //  Display axes
  *  Use VARARGS to make this more flexible
  */
 #define LEN 256  //  Maximum length of text string
-void Print(const char* format , ...)
+void Print(const char* format, ...)
 {
    char    buf[LEN];
    char*   ch=buf;
    va_list args;
+   
    //  Turn the parameters into a character string
    va_start(args,format);
    vsnprintf(buf,LEN,format,args);
    va_end(args);
+   
    //  Display the characters one at a time at the current raster position
    while (*ch)
       glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *ch++);
@@ -64,13 +66,13 @@ static void cylVertex(double r, double th, double z)
 /*
  * Draw a radially symmetric solid
  *
- * profile: pointer to an array of x,y coordinates representing the surface profile of the solid
- * size: The number of points in the profile array
- * bz,by,bz: 3D coordinates of the base of the solid
- * rx,ry,rz: 3D vector for rotation of the solid.
- * ph:  Angle to rotate the solid around (rx,ry,rz)
- * s: the scale of the solid
- * h: the base hue of the solid (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
+ *    profile: pointer to an array of x,y coordinates representing the surface profile of the solid
+ *    size: The number of points in the profile array
+ *    bz,by,bz: 3D coordinates of the base of the solid
+ *    rx,ry,rz: 3D vector for rotation of the solid.
+ *    ph:  Angle to rotate the solid around (rx,ry,rz)
+ *    s: the scale of the solid
+ *    h: the base hue of the solid (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
  */
 static void lathe(dpp profile, int size, double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h)
 {
@@ -97,11 +99,11 @@ static void lathe(dpp profile, int size, double bx, double by, double bz, double
    for (i=1; i<size; i++)
    {
       glBegin(GL_QUAD_STRIP);
-      hsv.S = (double)(size-i) / (double)size;     // Vary the color saturation from 0 at the bottom to 1 at the tip
+      hsv.S = (double)(size-i) / (double)size;        // Vary the color saturation from 0 at the bottom to 1 at the tip
       for (th=0; th<=360; th+=d)
       {
-         hsv.V = fabs((float)th-180) / 360.0 + 0.5;       // Vary the color lightness from .5 to 1.0 around the rotation
-         rgb = hsv2rgb(hsv);                       // Calculate the vertex RGB color from the HSV triplet.
+         hsv.V = fabs((float)th-180) / 360.0 + 0.5;   // Vary the color lightness from .5 to 1.0 around the rotation
+         rgb = hsv2rgb(hsv);                          // Calculate the vertex RGB color from the HSV triplet.
          glColor3f(rgb.R, rgb.G, rgb.B);
          cylVertex(profile[i-1].x, th, profile[i-1].y);
          cylVertex(profile[i].x, th, profile[i].y);
@@ -125,7 +127,7 @@ static void lathe(dpp profile, int size, double bx, double by, double bz, double
    {
       // Draw a triangle fan from the origin to the final circle.
       glBegin(GL_TRIANGLE_FAN);
-      glColor3f(0,0,1);    // base cap is always blue
+      glColor3f(1, 1, 0);    // base cap is always orange
       glVertex3d(0, profile[size-1].y, 0);
       for (th = 0; th <= 360; th += d)
          cylVertex(profile[size-1].x, th, profile[size-1].y);
@@ -137,7 +139,7 @@ static void lathe(dpp profile, int size, double bx, double by, double bz, double
 }
 
 /*
- *  Draw vertex in spherical coordinates
+ *  Draw a vertex in spherical coordinates
  */
 static void sphVertex(double th,double ph, double r)
 {
@@ -197,11 +199,12 @@ static void sphere(double x, double y, double z, double r)
 
 /*
  * Draw 3 rocket fins equidistant around the rotation
- * bz,by,bz: 3D coordinates of the base of the rocket
- * rx,ry,rz: 3D vector for rotation of the rocket.
- * ph:  Angle to rotate the rocket
- * s: the scale of the rocket
- * fc: the number of fins on the rocket
+ *
+ *    bz,by,bz: 3D coordinates of the base of the rocket
+ *    rx,ry,rz: 3D vector for rotation of the rocket.
+ *    ph:  Angle to rotate the rocket
+ *    s: the scale of the rocket
+ *    fc: the number of fins on the rocket
  */
 static void draw_fins(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, int fc)
 {
@@ -216,12 +219,15 @@ static void draw_fins(double bx, double by, double bz, double rx, double ry, dou
    glRotated(ph, rx, ry, rz);
    glScaled(s,s,s);
 
-   // Draw three rocket fins, spaced equally around the cylinder   
+   // Draw rocket fins, spaced equally around the cylinder   
    for (th=0; th<=360; th += dth)
    {
-      glBegin(GL_QUAD_STRIP);    // The fin shape is non-convex, so can't use a simple polygon
-      glColor3f(1,0,0);    // No choice; rocket fins are RED!
+      glBegin(GL_QUAD_STRIP); // The fin shape is non-convex, so can't use a simple polygon
+      glColor3f(1,0,0);       // No choice; rocket fins are RED!
 
+      // The rocket fin is non-convex, so it cannot be drawn as a single polygon.  This loop will draw it
+      // instead as a strip of quads, making the assumption that the first point in the array is adjacent to
+      // the last point, the 2nd point is adjacent to the 2nd-to-last point, and so on.
       for (i=0; i<(ROCKET_FIN_POINT_COUNT/2); i++)
       {
          cylVertex(rocket_fin[i].x, th, rocket_fin[i].y);
@@ -238,12 +244,12 @@ static void draw_fins(double bx, double by, double bz, double rx, double ry, dou
 /*
  * Draw a cartoon rocket ship
  *
- * bz,by,bz: 3D coordinates of the base of the rocket
- * rx,ry,rz: 3D vector for rotation of the rocket.
- * ph:  Angle to rotate the rocket
- * s: the scale of the rocket
- * h: the base hue of the rocket (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
- * fc: how many fins the rocket gets
+ *    bz,by,bz: 3D coordinates of the base of the rocket
+ *    rx,ry,rz: 3D vector for rotation of the rocket.
+ *    ph:  Angle to rotate the rocket
+ *    s: the scale of the rocket
+ *    h: the base hue of the rocket (value from 0 to 360) (ref: http://colorizer.org/ for a good interactive color chooser)
+ *    fc: how many fins the rocket gets
  */
 static void rocket(double bx, double by, double bz, double rx, double ry, double rz, double ph, double s, double h, int fc)
 {
@@ -271,18 +277,20 @@ void display()
    glRotatef(ph,1,0,0);
    glRotatef(th,0,1,0);
 
-   //  Draw some rockets
-   rocket(1,1,0, 1,1,0,30, 1.0/50.0, 60, 3);          // Yellow
-   rocket(-1,0,0, 1,0,1,85, -1.0/40.0, 180, 4);       // Cyan
-   rocket(0,0.5,1.5, 0,1,1,161, 1.0/60.0, 300, 5);    // Magenta
-   rocket(0,-0.5,-1, 0,1,0,35, -1.0/70.0, 120, 6);    // Green
-   rocket(1.1,1.1,1.1, 0,0,0,0, 1.0/60.0, 260, 7);    // Purple
+   // Draw some rockets
+   // (ref: http://colorizer.org/ for a good interactive color chooser)
+   rocket(   1,   1,   0,  1, 1, 0,  30,  1.0/70.0, 120, 3);    // Green, 3 fins
+   rocket(  -1,   0,   0,  1, 0, 1,  85, -1.0/60.0, 180, 4);    // Cyan, 4 fins
+   rocket(   0, 0.5, 1.5,  0, 1, 1, 161,  1.0/80.0, 300, 5);    // Magenta, 5 fins
+   rocket(   0,-0.5,  -1,  0, 1, 0,  35, -1.0/90.0, 260, 6);    // Purple, 6 fins
+   rocket( 1.1, 1.1, 1.1,  0, 0, 0,   0,  1.0/80.0, 240, 7);    // Blue, 7 fins
 
-   //  Draw a planet (sphere) in the center
+   //  Draw a psychadelic planet in the center
    sphere(0,0,0 , 0.4);
 
    //  White
    glColor3f(1,1,1);
+   
    //  Draw axes
    if (axes)
    {

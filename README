@@ -2,12 +2,12 @@
 HW 3 for CSCI 5229 Computer Graphics - University of Colorado Boulder
 Timothy Mason
 
-This is a scene of several rocket ships around a central planet.  The rockets
-are generated from a canned array of points which define the shape of the hull.
-Those points are then spun around a central axis to create a cylindrical solid.
-The routine "lathe" which creates the cylindrical solid is capable of using any
-arbitrary hull shape.  For example, it could easily be used to create an hourglass
-shape, a cylinder, a car wheel, etc.
+This is a scene of several cartoon style rocket ships around a central planet.  
+The rockets are generated from a canned array of points which define the shape of 
+the hull.  Those points are then spun around a central axis to create a cylindrical 
+solid.  The routine "lathe" which creates the cylindrical solid is capable of using 
+any arbitrary hull shape.  For example, it could easily be used to create an 
+hourglass shape, a cylinder, a car wheel, a teapot body, etc.
 
 This cylindrical solid is used for the hull of the spaceship.  Rocket fins are then
 added using a similar array traversal technique which builds a quadstrip based 
@@ -20,3 +20,4 @@ Key bindings:
   0          Reset view angle
   ESC        Exit
 
+Time Spent: 9 hours

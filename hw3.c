@@ -31,8 +31,8 @@ int ph=0;         //  Elevation of view angle
 int axes=1;       //  Display axes
 
 //  Cosine and Sine in degrees
-#define Cos(x) (cos((x)*M_PI/180))
-#define Sin(x) (sin((x)*M_PI/180))
+#define Cos(x) (cos((x)*3.1415926/180))
+#define Sin(x) (sin((x)*3.1415926/180))
 
 /*
  *  Convenience routine to output raster text

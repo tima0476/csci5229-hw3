@@ -27,10 +27,6 @@ endif
 hw3.o: hw3.c rocket.h hsv2rgb.h
 hsv2rgb.o: hsv2rgb.c hsv2rgb.h
 
-#  Create archive
-hw3.a:hw3.o hsv2rgb.o
-	ar -rcs $@ $^
-
 # Compile rules
 .c.o:
 	gcc -c $(CFLG) $<
@@ -38,7 +34,7 @@ hw3.a:hw3.o hsv2rgb.o
 	g++ -c $(CFLG) $<
 
 #  Link
-hw3:hw3.o hw3.a
+hw3:hw3.o hsv2rgb.o
 	gcc -O3 -o $@ $^   $(LIBS)
 
 #  Clean

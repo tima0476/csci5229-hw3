@@ -286,7 +286,7 @@ void display()
    rocket( 1.1, 1.1, 1.1,  0, 0, 0,   0,  1.0/80.0, 240, 7);    // Blue, 7 fins
 
    //  Draw a psychadelic planet in the center
-   sphere(0,0,0 , 0.4);
+   sphere(0,0,0, 0.3);
 
    //  White
    glColor3f(1,1,1);
@@ -393,7 +393,7 @@ int main(int argc,char* argv[])
    glutInit(&argc,argv);
 
    //  Request double buffered, true color window with Z buffering at 600x600
-   glutInitWindowSize(600,600);
+   glutInitWindowSize(800,800);
    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
    //  Create the window
